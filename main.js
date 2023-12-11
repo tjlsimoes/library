@@ -18,14 +18,15 @@ function Book(title, author, pages, read) {
 	}
 }
 
-function addBookToLibrary(book) {
+function addBookToLibrary(info) {
+  let book = new Book(info[0], info[1], info[2], info[3]);
   myLibrary.push(book);
 }
 
 theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
-addBookToLibrary(theHobbit);
+myLibrary.push(theHobbit);
 annaKarenina = new Book('Anna Karenina', 'Tolstoy', 799, false);
-addBookToLibrary(annaKarenina);
+myLibrary.push(annaKarenina);
 
 function displayLibrary(myLibrary) {
   let table = document.getElementById("myLibrary");
@@ -47,11 +48,32 @@ function displayLibrary(myLibrary) {
 
 displayLibrary(myLibrary);
 
+function addRow(info) {
+  let table = document.getElementById("myLibrary");
+  let row = table.insertRow(-1);
+
+  let c0 = row.insertCell(0);
+  let c1 = row.insertCell(1);
+  let c2 = row.insertCell(2);
+  let c3 = row.insertCell(3);
+
+  c0.innerText = info[0];
+  c1.innerText = info[1];
+  c2.innerText = info[2];
+  c3.innerText = info[3];
+}
 
 
 const dialog = document.querySelector("dialog");
 const showButton = document.querySelector("dialog + button");
 const closeButton = document.querySelector("dialog button");
+
+const bookTitle = document.getElementById("title");
+const bookAuthor = document.getElementById("author");
+const bookPages = document.getElementById("pages");
+const bookRead = document.getElementById("read");
+
+const output = document.querySelector('output');
 
 // "Show the dialog" button opens the dialog modally
 showButton.addEventListener("click", () => {
@@ -59,7 +81,15 @@ showButton.addEventListener("click", () => {
 });
 
 // "Close" button closes the dialog
-closeButton.addEventListener("click", () => {
-  dialog.close();
+closeButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  dialog.close([bookTitle.value, bookAuthor.value,
+                  bookPages.value, bookRead.value]);
+});
+
+dialog.addEventListener("close", (e) => {
+  book_info = dialog.returnValue.split(',');
+  addBookToLibrary(book_info);
+  addRow(book_info);
 });
 
