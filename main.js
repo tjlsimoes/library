@@ -1,95 +1,117 @@
+// Set up with regard to:
+// https://github.com/BradyBorker/Odin-JavaScript/blob/main/Library/library.js
+
 const myLibrary = [];
 
 function Book(title, author, pages, read) {
 	this.title = title;
 	this.author = author;
 	this.pages = pages;
-	this.read = read;
-	this.info = getInfo(title, author, pages, read)
-
-	function getInfo(title, author, pages, read) {
-		info =`${title} by ${author}, ${pages} pages, `;
-		if (read == true) {
-			info += 'read';
-		} else {
-			info += 'not read yet';
-		}
-		return info;
-	}
+	this.read = (read == 'read') ? 'Yes' : 'No';
 }
 
-function addBookToLibrary(info) {
-  let book = new Book(info[0], info[1], info[2], info[3]);
+function addBookToLibrary(book) {
   myLibrary.push(book);
+  displayLibrary();
 }
 
-theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, true);
-myLibrary.push(theHobbit);
-annaKarenina = new Book('Anna Karenina', 'Tolstoy', 799, false);
-myLibrary.push(annaKarenina);
-
-function displayLibrary(myLibrary) {
-  let table = document.getElementById("myLibrary");
-
-  myLibrary.forEach(book => {
-    let row = table.insertRow(-1);
-
-    let c0 = row.insertCell(0);
-    let c1 = row.insertCell(1);
-    let c2 = row.insertCell(2);
-    let c3 = row.insertCell(3);
-
-    c0.innerText = book.title;
-    c1.innerText = book.author;
-    c2.innerText = book.pages;
-    c3.innerText = book.read;
-  });
+function removeBookFromLibrary(index) {
+	myLibrary.splice(index, 1);
+  displayLibrary();
 }
 
-displayLibrary(myLibrary);
+function displayLibrary() {
+  const tableBody = document.querySelector('tbody');
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild)
+  }
 
-function addRow(info) {
-  let table = document.getElementById("myLibrary");
-  let row = table.insertRow(-1);
+  let bookNumber = 0;
+  for (let book of myLibrary) {
+    const tr = document.createElement('tr');
+    tableBody.appendChild(tr);
 
-  let c0 = row.insertCell(0);
-  let c1 = row.insertCell(1);
-  let c2 = row.insertCell(2);
-  let c3 = row.insertCell(3);
+    for (let property of Object.keys(book)) {
+      let td = document.createElement('td');
+      let tdText = document.createTextNode(book[property]);
 
-  c0.innerText = info[0];
-  c1.innerText = info[1];
-  c2.innerText = info[2];
-  c3.innerText = info[3];
+      td.appendChild(tdText);
+      tr.appendChild(td);
+
+      addEditReadStatusListener(property, book, td);
+    }
+    addBookRemovalListener(tr, bookNumber);
+    bookNumber++;
+  }
 }
 
+theHobbit = new Book('The Hobbit', 'J.R.R. Tolkien', 295, 'Yes');
+addBookToLibrary(theHobbit);
+annaKarenina = new Book('Anna Karenina', 'Tolstoy', 799, 'No');
+addBookToLibrary(annaKarenina);
+displayLibrary();
 
-const dialog = document.querySelector("dialog");
-const showButton = document.querySelector("dialog + button");
-const closeButton = document.querySelector("dialog button");
+function addEditReadStatusListener(property, book, td) {
+  if (property === 'read') {
+    td.addEventListener('click', (e) => {
+      if (book.read === 'No') {
+        book[property] = 'Yes';
+        td.textContent = 'Yes';
+      } else if (book.read === 'Yes') {
+        book[property] = 'No';
+        td.textContent = 'No';
+      }
+    })
+  }
+}
 
-const bookTitle = document.getElementById("title");
-const bookAuthor = document.getElementById("author");
-const bookPages = document.getElementById("pages");
-const bookRead = document.getElementById("read");
+function addBookRemovalListener(tr, bookNumber) {
+  let td = document.createElement('td');
+  td.id = bookNumber;
+  td.appendChild(document.createTextNode('X'));
+  td.addEventListener('click', (e) => {
+    removeBookFromLibrary(e.target.id);
+  })
+  tr.appendChild(td);
+}
 
-const output = document.querySelector('output');
+function allInputsFilled(author, title, pages) {
+  if (author === '' || title === '' || pages === '') {
+    alert('All inputs need to be filled');
+    return false;
+  }
+  return true;
+}
 
-// "Show the dialog" button opens the dialog modally
-showButton.addEventListener("click", () => {
-  dialog.showModal();
+function dropModal(title, author, pages, modal, library) {
+  author.value = '';
+  title.value = '';
+  pages.value = '';
+  modal.classList.remove('show');
+  library.classList.remove('hide');
+}
+
+const modal = document.querySelector('.modal');
+const button = document.querySelector('.add-book');
+const library = document.querySelector('.library-container');
+
+button.addEventListener('click', (e) => {
+  modal.classList.add('show');
+  library.classList.add('hide');
 });
 
-// "Close" button closes the dialog
-closeButton.addEventListener("click", (event) => {
-  event.preventDefault();
-  dialog.close([bookTitle.value, bookAuthor.value,
-                  bookPages.value, bookRead.value]);
-});
+const form = document.getElementById('add-book-form');
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  let author = document.querySelector('#author');
+  let title = document.querySelector('#title');
+  let pages = document.querySelector('#page-count');
+  let read = document.querySelector('input[name=has-read]:checked');
 
-dialog.addEventListener("close", (e) => {
-  book_info = dialog.returnValue.split(',');
-  addBookToLibrary(book_info);
-  addRow(book_info);
+  if (e.submitter.id ==='add' && allInputsFilled(title.value, author.value, pages.value)) {
+    addBookToLibrary(new Book(title.value, author.value, pages.value, read.id));
+    dropModal(title, author, pages, modal, library);
+  } else if (e.submitter.id === 'discard') {
+    dropModal(title, author, pages, modal, library);
+  }
 });
-
