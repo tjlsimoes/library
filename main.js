@@ -39,10 +39,10 @@ function displayLibrary(myLibrary) {
     let c2 = row.insertCell(2);
     let c3 = row.insertCell(3);
 
-    c0.innerText = book.title
-    c1.innerText = book.author
-    c2.innerText = book.pages
-    c3.innerText = book.read
+    c0.innerText = book.title;
+    c1.innerText = book.author;
+    c2.innerText = book.pages;
+    c3.innerText = book.read;
   });
 }
 
