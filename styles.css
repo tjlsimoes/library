@@ -1,0 +1,83 @@
+/* Copied from:
+https://github.com/BradyBorker/Odin-JavaScript/blob/main/Library/library.css
+*/
+
+.modal {
+    min-width: 400px;
+    height: 300px;
+    border-radius: 5px;
+    opacity: 0%;
+    pointer-events: none;
+    position: fixed;
+    left: 50%;
+    transform-origin: center;
+    transform: translate(-50%, -50%);
+    transition: transform .5s ease-out,
+                opacity .5s;
+    background-color: #333;
+    color: #fff;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    opacity: 100%;
+    pointer-events: all;
+    transform: translate(-50%, 0%);
+}
+
+/* Modal Form */
+.modal > form {
+    display: grid;
+    grid-template-columns: repeat(2, min-content);
+    grid-auto-rows: max-content;
+    gap: 10px;
+}
+
+.library-container {
+    margin: auto;
+    max-width: max-content;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    transition: opacity .5s;
+}
+
+.library-container.hide {
+    opacity: 0%;
+    pointer-events: none;
+}
+
+.library-container > button {
+    margin: 25px auto 25px auto;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+/* Library Table */
+
+td {
+    border: 1px solid #333;
+}
+
+tr > td:last-child {
+    border: none;
+    color: red;
+    cursor: pointer;
+}
+
+td,
+th {
+    padding: 5px;
+}
+
+thead {
+    background-color: #333;
+    color: #fff;
+}
